@@ -18,8 +18,13 @@ export function SSOCallback() {
   const [statusMessage, setStatusMessage] = useState('Mengautentikasi dengan Portal PUPR-ID...');
   const [userData, setUserData] = useState<PUPRIdUser | null>(null);
 
+  // Gunakan ref agar tidak terpengaruh oleh React StrictMode double-mount
+  const hasProcessed = React.useRef(false);
+
   useEffect(() => {
-    let isMounted = true;
+    // Cegah double-execution di React StrictMode
+    if (hasProcessed.current) return;
+    hasProcessed.current = true;
 
     const processSSO = async () => {
       try {
@@ -30,8 +35,6 @@ export function SSOCallback() {
 
         // Verifikasi token via backend API / fallback client
         const user = await verifySSOToken(token);
-
-        if (!isMounted) return;
 
         setUserData(user);
         setStatusStep('success');
@@ -53,14 +56,15 @@ export function SSOCallback() {
 
         showToast(`Login SSO PUPR-ID Berhasil: Selamat datang, ${user.fullName} (${user.role})`, 'success');
 
-        // Pengalihan ke Dashboard
+        // Pengalihan ke Dashboard — gunakan window.location sebagai fallback jika navigate gagal
         setTimeout(() => {
-          if (isMounted) {
-            navigate('/');
+          try {
+            navigate('/', { replace: true });
+          } catch {
+            window.location.replace('/');
           }
         }, 1200);
       } catch (error) {
-        if (!isMounted) return;
         console.error('SSO Process Error:', error);
         setStatusStep('error');
         setStatusMessage('Gagal memverifikasi token SSO PUPR-ID.');
@@ -68,16 +72,17 @@ export function SSOCallback() {
         showToast('Autentikasi Gagal: Terjadi kesalahan saat memverifikasi SSO PUPR-ID.', 'error');
 
         setTimeout(() => {
-          if (isMounted) navigate('/auth/login');
+          try {
+            navigate('/auth/login', { replace: true });
+          } catch {
+            window.location.replace('/auth/login');
+          }
         }, 2000);
       }
     };
 
     processSSO();
-
-    return () => {
-      isMounted = false;
-    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location, navigate, setActiveRole, showToast, login]);
 
   return (
