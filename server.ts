@@ -18,6 +18,7 @@ import { tteRouter } from "./src/routes/tte.ts";
 import { profileRouter } from "./src/routes/profile.ts";
 import { documentsRouter } from "./src/routes/documents.ts";
 import { authRouter } from "./src/routes/auth.ts";
+import { uploadRouter } from "./src/routes/upload.ts";
 
 
 async function startServer() {
@@ -35,6 +36,7 @@ async function startServer() {
   app.use('/api/tte', tteRouter);
   app.use('/api/profile', profileRouter);
   app.use('/api/documents', documentsRouter);
+  app.use('/api/upload', uploadRouter);
 
 
   // Health check

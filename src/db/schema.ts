@@ -243,6 +243,7 @@ export const mediaFiles = pgTable('media_files', {
   type: text('type').notNull(), // photo, video, document, drawing, lidar, ifc
   url: text('url').notNull(),
   thumbnailUrl: text('thumbnail_url'),
+  googleDriveFileId: text('google_drive_file_id'),
   category: text('category'), // komponen, lingkungan, administrasi
   
   // Metadata
@@ -478,6 +479,7 @@ export const documents = pgTable('documents', {
   title: text('title').notNull(),
   documentType: text('document_type').notNull(), // Surat, Laporan, Berita Acara
   fileUrl: text('file_url'),
+  googleDriveFileId: text('google_drive_file_id'),
   status: requestStatusEnum('status').default('DRAFT'),
   creatorId: uuid('creator_id').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -489,6 +491,7 @@ export const documentVersions = pgTable('document_versions', {
   documentId: uuid('document_id').references(() => documents.id).notNull(),
   versionNumber: integer('version_number').notNull(),
   fileUrl: text('file_url').notNull(),
+  googleDriveFileId: text('google_drive_file_id'),
   hashAlgorithm: text('hash_algorithm').default('SHA-256'),
   documentHash: text('document_hash').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -598,6 +601,7 @@ export const requestAttachments = pgTable('request_attachments', {
   fileType: text('file_type').notNull(),
   fileSize: integer('file_size'),
   storagePath: text('storage_path').notNull(),
+  googleDriveFileId: text('google_drive_file_id'),
   category: text('category'),
   uploadedBy: uuid('uploaded_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),

@@ -10,6 +10,8 @@ declare global {
 // Function to create or retrieve the connection pool.
 export const createPool = () => {
   if (!global._postgresPool) {
+    const isSslEnabled = process.env.SQL_SSL === 'true';
+
     global._postgresPool = new Pool({
       host: process.env.SQL_HOST || 'localhost',
       user: process.env.SQL_USER || 'postgres',
@@ -17,6 +19,7 @@ export const createPool = () => {
       database: process.env.SQL_DB_NAME || 'postgres',
       max: 10,
       connectionTimeoutMillis: 15000,
+      ...(isSslEnabled ? { ssl: { rejectUnauthorized: false } } : {}),
     });
 
     // Prevent unhandled pool-level errors from crashing the application
