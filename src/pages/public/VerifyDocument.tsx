@@ -159,7 +159,7 @@ export function VerifyDocument() {
               </div>
               
               <div className="mt-8 pt-6 border-t border-slate-100 flex justify-center">
-                <Button variant="outline" asChild>
+                <Button variant="outline">
                   <Link to="/">Kembali ke Beranda</Link>
                 </Button>
               </div>
@@ -169,7 +169,7 @@ export function VerifyDocument() {
           {!loading && result?.status !== 'VALID' && (
             <CardContent>
               <div className="mt-8 flex justify-center">
-                <Button variant="outline" asChild>
+                <Button variant="outline">
                   <Link to="/">Kembali ke Beranda</Link>
                 </Button>
               </div>

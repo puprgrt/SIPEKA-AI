@@ -17,6 +17,7 @@ import { reportsRouter } from "./src/routes/reports.ts";
 import { tteRouter } from "./src/routes/tte.ts";
 import { profileRouter } from "./src/routes/profile.ts";
 import { documentsRouter } from "./src/routes/documents.ts";
+import { authRouter } from "./src/routes/auth.ts";
 
 
 async function startServer() {
@@ -25,6 +26,7 @@ async function startServer() {
 
   app.use(express.json());
 
+  app.use('/api/auth', authRouter);
   app.use('/api/buildings', buildingsRouter);
   app.use('/api/surveys', surveysRouter);
   app.use('/api/assessments-core', assessmentsRouter);
@@ -33,6 +35,7 @@ async function startServer() {
   app.use('/api/tte', tteRouter);
   app.use('/api/profile', profileRouter);
   app.use('/api/documents', documentsRouter);
+
 
   // Health check
   app.get("/api/health", (req, res) => {

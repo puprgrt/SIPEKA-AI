@@ -3,18 +3,46 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Building, Lock, Mail, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { Building, Lock, Mail, ChevronRight, Eye, EyeOff, ShieldCheck, Zap, ArrowRight, UserCheck } from 'lucide-react';
 import { googleSignIn } from '../../lib/firebase';
+import { getSSOAuthorizationUrl, MOCK_PUPR_ID_USERS } from '../../lib/puprIdSSO';
+import { useRole } from '@/contexts/RoleContext';
+import { useToast } from '@/contexts/ToastContext';
 import { cn } from '@/lib/utils';
 
 export function Login() {
   const navigate = useNavigate();
+  const { setActiveRole } = useRole();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isSSOLoading, setIsSSOLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showSimulationModal, setShowSimulationModal] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+  const handlePUPRIDLogin = () => {
+    setIsSSOLoading(true);
+    const authUrl = getSSOAuthorizationUrl('/auth/callback');
+    
+    // Redirect pengguna ke Portal SSO PUPR-ID
+    setTimeout(() => {
+      window.location.href = authUrl;
+    }, 400);
+  };
+
+  const handleSimulatedSSOLogin = (nip: string) => {
+    setIsSSOLoading(true);
+    setShowSimulationModal(false);
+    
+    showToast(`Menghubungkan SSO PUPR-ID: Memverifikasi NIP ${nip}...`, 'info');
+
+    setTimeout(() => {
+      navigate(`/auth/callback?code=sim_token_${nip}`);
+    }, 600);
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -38,7 +66,7 @@ export function Login() {
   };
 
   return (
-    <div className="w-full max-w-md animate-slide-up">
+    <div className="w-full max-w-md animate-slide-up relative">
       {/* Logo Bar */}
       <div className="flex items-center gap-3 mb-8 justify-center lg:justify-start">
         <div className="flex items-center gap-3 bg-white dark:bg-card p-3 px-5 rounded-2xl shadow-[var(--shadow-sm)] border border-border/60">
@@ -58,7 +86,7 @@ export function Login() {
               Masuk ke <span className="text-gradient-pupr">SIPEKA</span>
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Masukkan email dan kata sandi yang telah terdaftar
+              Gunakan Single Sign-On **PUPR-ID** atau kredensial akun terdaftar
             </p>
           </div>
 
@@ -70,7 +98,7 @@ export function Login() {
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pupr-blue transition-colors" size={16} />
                 <Input 
                   type="text" 
-                  placeholder="nama@garutkab.go.id" 
+                  placeholder="nama@garutkab.go.id / 19850315..." 
                   className="pl-10 h-11"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -110,7 +138,7 @@ export function Login() {
               type="submit" 
               variant="pupr" 
               className="w-full h-12 text-base font-semibold shadow-md shadow-pupr-blue/20 mt-2"
-              disabled={isLoading}
+              disabled={isLoading || isSSOLoading}
             >
               {isLoading ? (
                 <div className="flex items-center gap-2">
@@ -119,7 +147,7 @@ export function Login() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center gap-2">
-                  <span>Masuk</span>
+                  <span>Masuk Biasa</span>
                   <ChevronRight size={18} />
                 </div>
               )}
@@ -140,21 +168,46 @@ export function Login() {
           <div className="mt-6 flex flex-col gap-3">
             <Button 
               type="button" 
-              variant="outline" 
-              className="w-full h-11 font-medium gap-2.5" 
-              onClick={() => window.location.href = `https://pupr-id.vercel.app/login?redirect_url=${encodeURIComponent(window.location.origin + "/auth/callback")}`}
+              variant="default"
+              className="w-full h-12 font-semibold text-white bg-gradient-to-r from-pupr-navy via-pupr-blue to-sky-600 hover:opacity-95 shadow-md shadow-pupr-blue/20 gap-3 border border-white/10"
+              onClick={handlePUPRIDLogin}
+              disabled={isSSOLoading}
             >
-              <div className="w-5 h-5 bg-pupr-blue rounded-md flex items-center justify-center">
-                <Building className="w-3 h-3 text-white" />
-              </div>
-              SSO puprID
+              {isSSOLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Mengalihkan ke PUPR-ID...</span>
+                </div>
+              ) : (
+                <>
+                  <div className="w-6 h-6 bg-white/20 rounded-md flex items-center justify-center border border-white/30">
+                    <Building className="w-3.5 h-3.5 text-amber-300" />
+                  </div>
+                  <span>Masuk via SSO puprID</span>
+                  <ShieldCheck className="w-4 h-4 ml-auto text-amber-300" />
+                </>
+              )}
             </Button>
+
+            {/* Quick Fast-Login Demo Option */}
+            <div className="flex items-center justify-between text-xs px-1">
+              <span className="text-slate-400">Pengujian Lokal (SSO Fast-Login):</span>
+              <button 
+                type="button"
+                onClick={() => setShowSimulationModal(!showSimulationModal)}
+                className="text-pupr-blue font-semibold hover:underline flex items-center gap-1"
+              >
+                <Zap size={13} className="text-amber-500" />
+                Pilih Akun NIP
+              </button>
+            </div>
+
             <Button 
               type="button" 
               variant="outline" 
-              className="w-full h-11 font-medium gap-2.5" 
+              className="w-full h-11 font-medium gap-2.5 text-slate-700 dark:text-slate-300" 
               onClick={handleGoogleLogin} 
-              disabled={isLoading}
+              disabled={isLoading || isSSOLoading}
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -168,13 +221,57 @@ export function Login() {
         </div>
       </div>
       
+      {/* Simulation Modal Popover */}
+      {showSimulationModal && (
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-pupr-blue/30 p-5 z-50 animate-in fade-in zoom-in-95">
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-border">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-pupr-blue" />
+              <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">Simulasi SSO PUPR-ID</h3>
+            </div>
+            <button 
+              onClick={() => setShowSimulationModal(false)}
+              className="text-slate-400 hover:text-slate-600 text-xs font-bold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800"
+            >
+              ✕
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-500 mb-3">
+            Pilih salah satu profil ASN terverifikasi untuk menguji alur autentikasi dan penyesuaian hak akses (Role):
+          </p>
+
+          <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+            {Object.values(MOCK_PUPR_ID_USERS).map((user) => (
+              <button
+                key={user.nip}
+                onClick={() => handleSimulatedSSOLogin(user.nip)}
+                className="w-full text-left p-2.5 rounded-xl border border-border/80 hover:border-pupr-blue hover:bg-pupr-blue/5 transition-all flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <img src={user.avatarUrl} alt={user.fullName} className="w-9 h-9 rounded-full object-cover border border-pupr-blue/30" />
+                  <div>
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-pupr-blue">{user.fullName}</p>
+                    <p className="text-[10px] text-slate-400 font-mono">NIP: {user.nip}</p>
+                    <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[9px] font-semibold bg-pupr-blue/10 text-pupr-blue rounded">
+                      {user.role}
+                    </span>
+                  </div>
+                </div>
+                <ArrowRight size={14} className="text-slate-300 group-hover:text-pupr-blue group-hover:translate-x-0.5 transition-all" />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="text-center mt-8 space-y-1">
         <p className="text-xs text-slate-400 dark:text-slate-500">
           &copy; {new Date().getFullYear()} Dinas PUPR Kabupaten Garut
         </p>
         <p className="text-[10px] text-slate-300 dark:text-slate-600 font-mono" data-mono>
-          Powered by SIPEKA v2.0 Enterprise
+          Powered by SIPEKA v2.0 Enterprise & PUPR-ID SSO
         </p>
       </div>
     </div>
