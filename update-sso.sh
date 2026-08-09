@@ -1,0 +1,2 @@
+#!/bin/bash
+sed -i 's/<Button variant="outline" className="w-full h-11 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium" onClick={handleLogin}>/<Button type="button" variant="outline" className="w-full h-11 border-slate-200 hover:bg-slate-50 text-slate-700 font-medium" onClick={() => window.location.href = `https:\/\/pupr-id.vercel.app\/login?redirect_url=${encodeURIComponent(window.location.origin + "\/auth\/callback")}`}>/g' src/pages/auth/Login.tsx

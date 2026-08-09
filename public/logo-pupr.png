@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <circle cx="40" cy="40" r="38" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+  <!-- PUPR Building icon -->
+  <rect x="20" y="32" width="40" height="28" rx="3" fill="#0F4C81" opacity="0.9"/>
+  <!-- Pillars -->
+  <rect x="26" y="38" width="4" height="16" rx="1" fill="white" opacity="0.7"/>
+  <rect x="34" y="38" width="4" height="16" rx="1" fill="white" opacity="0.7"/>
+  <rect x="42" y="38" width="4" height="16" rx="1" fill="white" opacity="0.7"/>
+  <rect x="50" y="38" width="4" height="16" rx="1" fill="white" opacity="0.7"/>
+  <!-- Roof -->
+  <path d="M18 32L40 20L62 32" stroke="#0F4C81" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <!-- Base -->
+  <rect x="18" y="58" width="44" height="4" rx="1" fill="#0F4C81" opacity="0.7"/>
+  <!-- Text -->
+  <text x="40" y="73" text-anchor="middle" font-family="Inter, sans-serif" font-size="7" font-weight="600" fill="#64748B">PUPR</text>
+</svg>

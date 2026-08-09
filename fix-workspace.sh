@@ -1,0 +1,4 @@
+#!/bin/bash
+sed -i 's/import { SignatureCanvas, SignatureCanvasRef } from '\''@\/components\/ui\/signature-canvas'\'';/import { SignatureCanvas, SignatureCanvasRef } from '\''@\/components\/ui\/signature-canvas'\'';\nimport { QRScanner } from '\''.\/QRScanner'\'';\nimport { AuditTrail, AuditLog } from '\''.\/AuditTrail'\'';\nimport { ShieldCheck, ScanLine } from '\''lucide-react'\'';/g' src/pages/persuratan/PersuratanWorkspace.tsx
+
+sed -i 's/const \[activeTab, setActiveTab\] = useState<\('\''surat_keluar'\'' | '\''surat_masuk'\'' | '\''draft'\'' | '\''template'\'' | '\''buat_surat'\'' | '\''pengaturan'\'' | '\''kotak_ttd'\''\)>('\''surat_keluar'\'');/const [activeTab, setActiveTab] = useState<'\''surat_keluar'\'' | '\''surat_masuk'\'' | '\''draft'\'' | '\''template'\'' | '\''buat_surat'\'' | '\''pengaturan'\'' | '\''kotak_ttd'\'' | '\''verifikasi'\'' | '\''audit_trail'\''>('\''surat_keluar'\'');/g' src/pages/persuratan/PersuratanWorkspace.tsx

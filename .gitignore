@@ -1,0 +1,100 @@
+# ==========================================
+# SIPEKA AI - Comprehensive .gitignore
+# ==========================================
+
+# 1. Dependencies & Package Managers
+node_modules/
+.pnpm-store/
+.yarn/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 2. Build & Compilation Artifacts
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.vuepress/dist
+.cache/
+*.tsbuildinfo
+.sh
+
+# 3. Environment Variables & Secrets (CRITICAL)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+!.env.example
+
+# 4. Certificates, Keys & Credentials
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+*.keystore
+*.jks
+*.id_rsa
+credentials.json
+service-account*.json
+gcp-key*.json
+supabase-keys*.json
+
+# 5. Database & Drizzle Local Dumps/Storage
+*.db
+*.sqlite
+*.sqlite3
+.drizzle/local/
+*.sql.dump
+
+# 6. IDEs, Editors & OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# VSCode (keep extensions.json if committed, ignore workspace state)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains / WebStorm / IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Vim & Text Editors
+*.swp
+*.swo
+*~
+*.bak
+
+# 7. Testing, Coverage & Logs
+logs/
+*.log
+coverage/
+.nyc_output/
+playwright-report/
+blob-report/
+test-results/
+
+# 8. AI, Agent & System Artifacts
+.gemini/
+.antigravity/
+tmp/
+temp/
+scratch/
