@@ -5,12 +5,14 @@ import { Loader2, ShieldCheck, CheckCircle2, Building, User, Award, ArrowRight }
 import { verifySSOToken, PUPRIdUser } from '../../lib/puprIdSSO';
 import { useRole, Role } from '@/contexts/RoleContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function SSOCallback() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setActiveRole } = useRole();
   const { showToast } = useToast();
+  const { login } = useAuth();
   
   const [statusStep, setStatusStep] = useState<'verifying' | 'success' | 'error'>('verifying');
   const [statusMessage, setStatusMessage] = useState('Mengautentikasi dengan Portal PUPR-ID...');
@@ -34,6 +36,15 @@ export function SSOCallback() {
         setUserData(user);
         setStatusStep('success');
         setStatusMessage('Autentikasi Berhasil! Menyinkronkan profil...');
+
+        // ✅ KRITIS: Simpan sesi ke AuthContext agar ProtectedGuard mengenali user sebagai authenticated
+        login({
+          id: user.id,
+          name: user.fullName,
+          email: user.email,
+          avatarUrl: user.avatarUrl,
+          nip: user.nip,
+        });
 
         // Update RoleContext secara otomatis sesuai role dari PUPR-ID
         if (user.role) {
@@ -67,7 +78,7 @@ export function SSOCallback() {
     return () => {
       isMounted = false;
     };
-  }, [location, navigate, setActiveRole, showToast]);
+  }, [location, navigate, setActiveRole, showToast, login]);
 
   return (
     <div className="w-full max-w-md animate-in fade-in zoom-in-95 duration-500">
