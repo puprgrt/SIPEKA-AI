@@ -8,6 +8,7 @@ import { googleSignIn } from '../../lib/firebase';
 import { getSSOAuthorizationUrl, MOCK_PUPR_ID_USERS } from '../../lib/puprIdSSO';
 import { useRole } from '@/contexts/RoleContext';
 import { useToast } from '@/contexts/ToastContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 export function Login() {
@@ -18,6 +19,7 @@ export function Login() {
   const [isSSOLoading, setIsSSOLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showSimulationModal, setShowSimulationModal] = useState(false);
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -39,9 +41,20 @@ export function Login() {
     
     showToast(`Menghubungkan SSO PUPR-ID: Memverifikasi NIP ${nip}...`, 'info');
 
-    setTimeout(() => {
-      navigate(`/auth/callback?code=sim_token_${nip}`);
-    }, 600);
+    // MOCK login for simulated SSO
+    const mockUser = MOCK_PUPR_ID_USERS[nip];
+    if (mockUser) {
+      setTimeout(() => {
+        login({
+          id: mockUser.nip,
+          name: mockUser.fullName,
+          email: `${mockUser.nip}@pupr.go.id`, // simulated email
+          avatarUrl: mockUser.avatarUrl,
+          nip: mockUser.nip,
+        });
+        navigate('/');
+      }, 600);
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -61,6 +74,12 @@ export function Login() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
+      // Fallback local login
+      login({
+        id: 'local_user',
+        name: formData.email.split('@')[0],
+        email: formData.email,
+      });
       navigate('/');
     }, 1000);
   };

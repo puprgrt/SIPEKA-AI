@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, UserCircle, Lightbulb, MessageCircle, PanelLeftClose, PanelLeft, Bell } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Search, Menu, UserCircle, Lightbulb, MessageCircle, PanelLeftClose, PanelLeft, Bell, LogOut } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { useRole, Role } from '@/contexts/RoleContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { ModeToggle } from '@/components/mode-toggle';
 import { NotificationDropdown } from './NotificationDropdown';
 import { cn } from '@/lib/utils';
@@ -39,8 +40,15 @@ interface TopbarProps {
 
 export function Topbar({ toggleSidebar, onOpenTour, isCollapsed, onToggleCollapse }: TopbarProps) {
   const { activeRole, setActiveRole, availableRoles } = useRole();
+  const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPage = breadcrumbMap[location.pathname] || 'SIPEKA';
+
+  const handleLogout = () => {
+    logout();
+    navigate('/auth/login');
+  };
 
   return (
     <header className={cn(
@@ -139,13 +147,26 @@ export function Topbar({ toggleSidebar, onOpenTour, isCollapsed, onToggleCollaps
           className="flex items-center gap-3 hover:bg-muted dark:hover:bg-slate-800 p-1.5 rounded-xl transition-colors cursor-pointer"
         >
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-tight">{activeRole}</p>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500">Kab. Garut</p>
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-tight">{user?.name || 'Pengguna'}</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500">{activeRole}</p>
           </div>
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pupr-blue to-sky-blue flex items-center justify-center text-white text-xs font-bold border border-white/20 shadow-sm">
-            {activeRole.charAt(0)}
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pupr-blue to-sky-blue flex items-center justify-center text-white text-xs font-bold border border-white/20 shadow-sm overflow-hidden">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              (user?.name?.charAt(0) || activeRole.charAt(0)).toUpperCase()
+            )}
           </div>
         </Link>
+        
+        {/* Logout Button */}
+        <button 
+          onClick={handleLogout}
+          className="p-2 ml-1 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors"
+          title="Keluar"
+        >
+          <LogOut size={18} />
+        </button>
       </div>
     </header>
   );
